@@ -2,7 +2,6 @@
  
 `timescale 1ns/1ns 
 
-
 module alu_wtb;
 
   // ALU instantation signals
