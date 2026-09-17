@@ -6,6 +6,7 @@
 
 import cocotb
 from cocotb.triggers import Timer
+from cocotb.types import LogicArray   
 import random 
 
 # Testing the "ADD" operation of the ALU.
@@ -193,7 +194,7 @@ async def test_XOR(uut):
 
 
 
-# Testing the "XOR" operation of the ALU.
+# Testing the "OR" operation of the ALU.
 @cocotb.test()
 async def test_OR(uut):
 
@@ -303,6 +304,133 @@ async def test_AND(uut):
     assert rd_value == expected_result, f"Test failed: Expected {expected_result}, got {rd_value}"  
 
     uut._log.info(f"Test passed: {rs1_value} & {rs2_value} = {rd_value}")
+
+
+
+# Testing the "SLL" operation of the ALU.
+@cocotb.test()
+async def test_SLL(uut):
+
+    uut._log.info("Testing the 'SLL' operation of the ALU.")
+    uut._log.info("Test 1: Performing SLL operation on two positive numbers.")
+
+    # Defining the input values
+    uut.rs1.value = random.randint(0, (2**32)-1)
+    uut.rs2.value = random.randint(0, (2**32)-1)
+    uut.alu_control.value = 0b0101 #Activate SLL mode
+
+    # wait 1ns for the signals to settle
+    await Timer(1, units="ns")
+
+    rs1_value = uut.rs1.value.to_unsigned()
+    rs2_value = uut.rs2.value.to_unsigned()
+    rs2_lower_5_bits = int(LogicArray(uut.rs2.value)[4:0])  # rs2[4:0]
+    uut._log.info(f"Setting rs1 to {uut.rs1.value.to_unsigned()}")
+    uut._log.info(f"Setting rs2 to {uut.rs2.value.to_unsigned()}")
+    uut._log.info(f"Setting alu_control to {uut.alu_control.value.to_unsigned()}")
+    uut._log.info(f"Setting rs2 lower 5 bits are to {rs2_lower_5_bits}")
+    rd_value  = uut.rd.value.to_unsigned()
+
+    expected_result = (rs1_value << rs2_lower_5_bits) & 0xFFFFFFFF
+    assert rd_value == expected_result, f"Test failed: Expected {expected_result}, got {rd_value}"
+
+    uut._log.info(f"Test passed: {rs1_value} << {rs2_lower_5_bits} = {rd_value}")
+
+    uut._log.info("*****************************************************************")
+
+# Testing the "SRL" operation of the ALU.
+@cocotb.test()
+async def test_SRL(uut):
+
+    uut._log.info("Testing the 'SRL' operation of the ALU.")
+    uut._log.info("Test 1: Performing SRL operation on two positive numbers.")
+
+    # Defining the input values
+    uut.rs1.value = random.randint(0, (2**32)-1)
+    uut.rs2.value = random.randint(0, (2**32)-1)
+    uut.alu_control.value = 0b0110 #Activate SRL mode
+
+    # wait 1ns for the signals to settle
+    await Timer(1, units="ns")
+
+    rs1_value = uut.rs1.value.to_unsigned()
+    rs2_value = uut.rs2.value.to_unsigned()
+    rs2_lower_5_bits = int(LogicArray(uut.rs2.value)[4:0])  # rs2[4:0]
+    uut._log.info(f"Setting rs1 to {uut.rs1.value.to_unsigned()}")
+    uut._log.info(f"Setting rs2 to {uut.rs2.value.to_unsigned()}")
+    uut._log.info(f"Setting alu_control to {uut.alu_control.value.to_unsigned()}")
+    uut._log.info(f"Setting rs2 lower 5 bits are to {rs2_lower_5_bits}")
+    rd_value  = uut.rd.value.to_unsigned()
+
+    expected_result = (rs1_value >> rs2_lower_5_bits) & 0xFFFFFFFF
+    assert rd_value == expected_result, f"Test failed: Expected {expected_result}, got {rd_value}"
+
+    uut._log.info(f"Test passed: {rs1_value} >> {rs2_lower_5_bits} = {rd_value}")
+
+    uut._log.info("*****************************************************************")
+
+
+
+# Testing the "SRA" operation of the ALU.
+@cocotb.test()
+async def test_SRA(uut):
+
+    uut._log.info("Testing the 'SRA' operation of the ALU.")
+    uut._log.info("Test 1: Performing SRA operation")
+
+    # Defining the input values
+    uut.rs1.value = random.randint(-(2**31), -1)
+    uut.rs2.value = random.randint(0, (2**32)-1)
+    uut.alu_control.value = 0b0111  # Activate SRA mode
+
+    # wait 1ns for the signals to settle
+    await Timer(1, units="ns")
+
+    rs1_value = uut.rs1.value.to_signed()
+    rs2_value = uut.rs2.value.to_unsigned()
+    rs2_lower_5_bits = int(LogicArray(uut.rs2.value)[4:0])  # rs2[4:0]
+
+    uut._log.info(f"Setting rs1 to {rs1_value}")
+    uut._log.info(f"Setting rs2 to {rs2_value}")
+    uut._log.info(f"Setting alu_control to {uut.alu_control.value.to_unsigned()}")
+    uut._log.info(f"Setting rs2 lower 5 bits are to {rs2_lower_5_bits}")
+
+    rd_value = uut.rd.value.to_signed()
+
+    expected_result = rs1_value >> rs2_lower_5_bits
+    assert rd_value == expected_result, f"Test failed: Expected {expected_result}, got {rd_value}"
+
+    uut._log.info(f"Test passed: {rs1_value} >> {rs2_lower_5_bits} = {rd_value}")
+
+    uut._log.info("*****************************************************************")
+
+    
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
